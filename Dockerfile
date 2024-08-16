@@ -1,6 +1,12 @@
 # Use the official Django image as the base image
-FROM django:latest
+FROM django:onbuild
 
+# Update sources list to point to archive.debian.org (not recommended)
+RUN sed -i -e 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list && \
+    sed -i -e 's/security.debian.org/archive.debian.org/g' /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get install -y gcc libpq-dev && \
+    apt-get clean
 # Install system dependencies
 RUN apt-get update && \
     apt-get install -y gcc libpq-dev && \
