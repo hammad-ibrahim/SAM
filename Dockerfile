@@ -1,26 +1,22 @@
-# Use an official Python runtime as a parent image
-FROM python:3.12.1-slim
+# Use the official Django image as the base image
+FROM django:latest
 
 # Set the working directory in the container
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y postgresql-server-dev-all
-
-
-# Copy the requirements file into the container at /app
+# Copy the requirements.txt file to the container
 COPY requirements.txt /app/
 
-# Install any necessary dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
-# Copy the current directory contents into the container at /app
+# Copy the entire Django project to the container
 COPY . /app/
 
-# Make port 8000 available to the world outside this container
+
+# Expose the port your Django app runs on (typically 8000)
 EXPOSE 8000
 
-# Define environment variable
-ENV DJANGO_SETTINGS_MODULE=your_project_name.settings
-
-# Run the Django app
+# Start the Django development server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
