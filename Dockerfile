@@ -1,32 +1,26 @@
-# Use a more recent Python image
-FROM python:3.12-slim
+# Base image
+FROM centos:9
 
-# Install system dependencies, including ca-certificates for SSL
-RUN apt-get update && \
-    apt-get install -y gcc libpq-dev ca-certificates && \
-    apt-get clean
-
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Set the working directory in the container
-WORKDIR /app
-
-# Copy the requirements.txt file to the container
-COPY requirements.txt /app/
+# Update package lists
+RUN dnf update -y
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN yum install -y python3 python3-devel gcc openssl-devel bzip2-devel libffi-devel
 
-# Copy the entire Django project to the container
-COPY . /app/
+# Install psycopg2 (if your project uses a PostgreSQL database)
+RUN yum install -y python3-psycopg2
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# Create a working directory
+WORKDIR /app
 
-# Expose the port your Django app runs on (typically 8000)
+# Copy your Django project code
+COPY . .
+
+# Install project dependencies
+RUN pip install -r requirements.txt  # Replace with your command if different
+
+# Expose port for Django app (modify if needed)
 EXPOSE 8000
 
-# Start the Django development server
+# Command to run the Django app
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
