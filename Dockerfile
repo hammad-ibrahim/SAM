@@ -1,19 +1,29 @@
 # Use the official Django image as the base image
 FROM django:latest
 
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y gcc libpq-dev && \
+    apt-get clean
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
 # Set the working directory in the container
 WORKDIR /app
 
 # Copy the requirements.txt file to the container
 COPY requirements.txt /app/
 
-# Install dependencies
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the entire Django project to the container
 COPY . /app/
 
+# Collect static files
+RUN python manage.py collectstatic --noinput
 
 # Expose the port your Django app runs on (typically 8000)
 EXPOSE 8000
