@@ -1,20 +1,14 @@
-# Use the official Django image as the base image
-FROM django:onbuild
+# Use a more recent Python image
+FROM python:3.12-slim
 
-# Update sources list to point to archive.debian.org (not recommended)
-RUN sed -i -e 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list && \
-    sed -i -e 's/security.debian.org/archive.debian.org/g' /etc/apt/sources.list && \
-    apt-get update && \
-    apt-get install -y gcc libpq-dev && \
-    apt-get clean
-# Install system dependencies
+# Install system dependencies, including ca-certificates for SSL
 RUN apt-get update && \
-    apt-get install -y gcc libpq-dev && \
+    apt-get install -y gcc libpq-dev ca-certificates && \
     apt-get clean
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Set the working directory in the container
 WORKDIR /app
