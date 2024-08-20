@@ -1,4 +1,4 @@
-FROM python:3.9-slim-buster  # Choose a suitable Python base image
+FROM django:onbuild  # Choose a suitable Python base image
 
 WORKDIR /app
 
